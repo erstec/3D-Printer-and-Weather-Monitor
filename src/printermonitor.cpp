@@ -56,7 +56,7 @@ TimeChangeRule myDST = {"SEET", Last, Sun, Mar, 3, +180};   // Daylight time = +
 TimeChangeRule mySTD = {"WEET", Last, Sun, Oct, 2, +120};   // Standard time = +2 hours
 Timezone myTZ(myDST, mySTD);
 
-#define VERSION "3.3"
+#define VERSION "3.4"
 
 #if defined(PRINTER_MON)
 #define HOSTNAME "PrintMon-"
