@@ -71,7 +71,7 @@ void TimeClient::updateTime() {
 
         int parsedDay = line.substring(11, 13).toInt();
         String parsedMonthStr = line.substring(14, 17);
-        int parsedMonth;
+        int parsedMonth = 1;
         if (parsedMonthStr == "JAN") {
           parsedMonth = 1;
         } else if (parsedMonthStr == "FEB") {
