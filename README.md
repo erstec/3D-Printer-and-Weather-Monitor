@@ -1,5 +1,17 @@
 # Printer Monitor (OctoPrint 3D Printer Monitor)
 
+# Changes is this Fork:
+- Builds on PlatformIO (with VSCode)
+- DST support, configure Summer/Winter timezone offsets here (for DST detection): https://github.com/erstec/printer-monitor/blob/5e00fa48f680bfb005f9e0373d07415e7664c6d5/src/printermonitor.cpp#L55 and in Web Interface 'Configure -> Standard UTC Time Offset (without DST)' (for clock auto-adjusting). Probably need to move configuration to Web Interface, but I'm too lazy atm... but you are welcome to create PR :) or just ask for help with configuration by creating Issue https://github.com/erstec/printer-monitor/issues/new/choose
+- LED Screen Brightness Dimming added, based on Sunrise/Sunset time. Can be disabled by entering same OLED Brightness values (Web Interface).
+- Can obtail 'real' temperature from MQTT Topic (together with LWT status) and show it at the OLED bottom line. Be sure to enter ALL Credentials and Topics, otherwise your MQTT Server will be permanently 'pinged' :)
+- Comment https://github.com/erstec/printer-monitor/blob/5e00fa48f680bfb005f9e0373d07415e7664c6d5/src/Settings.h#L61 to make it simple Weather station
+- Most new settings accessible through Web Interface
+
+# Warning
+- Used board are Standard ESP8266 DevKit, NOT Wemos D1, OLED Screen pins are REMAPED, please review before build https://github.com/erstec/printer-monitor/blob/5e00fa48f680bfb005f9e0373d07415e7664c6d5/src/Settings.h#L108
+
+# Original README
 ## New Easy Monitor Board Kit:
 Now available is the Pre Loaded Monitor Board Kit that comes ready to plug and play on your network.  
 * Kit on Etsy: https://www.etsy.com/listing/823257424  
