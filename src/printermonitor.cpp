@@ -56,7 +56,7 @@ TimeChangeRule myDST = {"SEET", Last, Sun, Mar, 3, +180};   // Daylight time = +
 TimeChangeRule mySTD = {"WEET", Last, Sun, Oct, 2, +120};   // Standard time = +2 hours
 Timezone myTZ(myDST, mySTD);
 
-#define VERSION "3.5"
+#define VERSION "3.7"
 
 #if defined(PRINTER_MON)
 #define HOSTNAME "PrintMon-"
@@ -222,9 +222,9 @@ static const char WEATHER_FORM[] PROGMEM = "<form class='w3-container' action='/
                       "<label>MQTT Port</label>"
                       "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttPort' value='%MQTT_PORT%' maxlength='5'>"
                       "<label>MQTT User</label>"
-                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttUser' value='%MQTT_USER%' maxlength='8'>"
+                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttUser' value='%MQTT_USER%' maxlength='16'>"
                       "<label>MQTT Password</label>"
-                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttPsw' value='%MQTT_PSW%' maxlength='8'>"
+                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttPsw' value='%MQTT_PSW%' maxlength='16'>"
                       "<label>MQTT Temperature Topic</label>"
                       "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttTempTopic' value='%MQTT_TEMP_TOPIC%' maxlength='31'>"
                       "<label>MQTT LWT Topic</label>"
