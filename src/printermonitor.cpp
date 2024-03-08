@@ -56,7 +56,7 @@ TimeChangeRule myDST = {"SEET", Last, Sun, Mar, 3, +180};   // Daylight time = +
 TimeChangeRule mySTD = {"WEET", Last, Sun, Oct, 2, +120};   // Standard time = +2 hours
 Timezone myTZ(myDST, mySTD);
 
-#define VERSION "3.7"
+#define VERSION "3.8"
 
 #if defined(PRINTER_MON)
 #define HOSTNAME "PrintMon-"
@@ -226,9 +226,9 @@ static const char WEATHER_FORM[] PROGMEM = "<form class='w3-container' action='/
                       "<label>MQTT Password</label>"
                       "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttPsw' value='%MQTT_PSW%' maxlength='16'>"
                       "<label>MQTT Temperature Topic</label>"
-                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttTempTopic' value='%MQTT_TEMP_TOPIC%' maxlength='31'>"
+                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttTempTopic' value='%MQTT_TEMP_TOPIC%' maxlength='128'>"
                       "<label>MQTT LWT Topic</label>"
-                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttLwtTopic' value='%MQTT_LWT_TOPIC%' maxlength='31'>"
+                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttLwtTopic' value='%MQTT_LWT_TOPIC%' maxlength='128'>"
                       "<button class='w3-button w3-block w3-grey w3-section w3-padding' type='submit'>Save and Reboot</button></form>"
                       "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 

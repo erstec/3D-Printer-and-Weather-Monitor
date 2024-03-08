@@ -58,7 +58,7 @@ SOFTWARE.
 // Start Settings
 //******************************
 
-#define PRINTER_MON
+// #define PRINTER_MON
 
 // OctoPrint / Repetier Monitoring -- Monitor your 3D OctoPrint or Repetier Server
 //#define USE_REPETIER_CLIENT       // Uncomment this line to use the Repetier Printer Server -- OctoPrint is used by default and is most common
