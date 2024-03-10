@@ -87,6 +87,7 @@ int MqttPort = 1883;
 String MqttUser = "admin";
 String MqttPsw = "admin";
 String MqttTempTopic = "";
+String MqttHumdTopic = "";
 String MqttLwtTopic = "";
 
 // Webserver

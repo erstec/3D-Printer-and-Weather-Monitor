@@ -48,6 +48,7 @@ bool mqttConnect();
 void mqttHandle();
 
 float extTemp0 = -127.0;
+float extHumd0 = -127.0;
 
 boolean EspShouldReboot = false;
 
@@ -56,7 +57,7 @@ TimeChangeRule myDST = {"SEET", Last, Sun, Mar, 3, +180};   // Daylight time = +
 TimeChangeRule mySTD = {"WEET", Last, Sun, Oct, 2, +120};   // Standard time = +2 hours
 Timezone myTZ(myDST, mySTD);
 
-#define VERSION "3.8"
+#define VERSION "3.9"
 
 #if defined(PRINTER_MON)
 #define HOSTNAME "PrintMon-"
@@ -227,6 +228,8 @@ static const char WEATHER_FORM[] PROGMEM = "<form class='w3-container' action='/
                       "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttPsw' value='%MQTT_PSW%' maxlength='16'>"
                       "<label>MQTT Temperature Topic</label>"
                       "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttTempTopic' value='%MQTT_TEMP_TOPIC%' maxlength='128'>"
+                      "<label>MQTT Humidity Topic</label>"
+                      "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttHumdTopic' value='%MQTT_HUMD_TOPIC%' maxlength='128'>"
                       "<label>MQTT LWT Topic</label>"
                       "<input class='w3-input w3-border w3-margin-bottom' type='text' name='mqttLwtTopic' value='%MQTT_LWT_TOPIC%' maxlength='128'>"
                       "<button class='w3-button w3-block w3-grey w3-section w3-padding' type='submit'>Save and Reboot</button></form>"
@@ -523,10 +526,13 @@ void mqttCallback(char *topic, byte *payload, unsigned int length) {
   // decode message
   if (String(topic) == MqttTempTopic) {
     extTemp0 = atof(message);
+  } else if (String(topic) == MqttHumdTopic) {
+    extHumd0 = atof(message);
   } else if (String(topic) == MqttLwtTopic) {
     Serial.println("LWT changed");
     if (String(message).equals("Offline")) {
       extTemp0 = -127.0;
+      extHumd0 = -127.0;
     }
   }
 }
@@ -534,6 +540,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length) {
 void mqttHandle() {
   if (!mqtt.connected()) {
     extTemp0 = -127.0;
+    extHumd0 = -127.0;
     unsigned long mqttCurrentTime = millis();
     if (mqttCurrentTime - mqttPreviousTime > 5000) {
       mqttPreviousTime = mqttCurrentTime;
@@ -552,8 +559,15 @@ bool mqttConnect() {
     Serial.print(F("MQTT connected: "));
     Serial.println(MqttServer);
     Serial.println(mqttClientName);
-    mqtt.subscribe(MqttTempTopic.c_str());
-    mqtt.subscribe(MqttLwtTopic.c_str());
+    if (MqttTempTopic != "") {
+      mqtt.subscribe(MqttTempTopic.c_str());
+    }
+    if (MqttHumdTopic != "") {
+      mqtt.subscribe(MqttHumdTopic.c_str());
+    }
+    if (MqttLwtTopic != "") {
+      mqtt.subscribe(MqttLwtTopic.c_str());
+    }
   }
   else {
     Serial.print(F("MQTT connection failed: "));
@@ -691,6 +705,8 @@ void handleUpdateWeather() {
   MqttPsw = server.arg("mqttPsw");
   String _mqttTempTopic = MqttTempTopic;
   MqttTempTopic = server.arg("mqttTempTopic");
+  String _mqttHumdTopic = MqttHumdTopic;
+  MqttHumdTopic = server.arg("mqttHumdTopic");
   String _mqttLwtTopic = MqttLwtTopic;
   MqttLwtTopic = server.arg("mqttLwtTopic");
   writeSettings();
@@ -704,6 +720,7 @@ void handleUpdateWeather() {
       || _mqttUser != MqttUser
       || _mqttPsw != MqttPsw
       || _mqttTempTopic != MqttTempTopic
+      || _mqttHumdTopic != MqttHumdTopic
       || _mqttLwtTopic != MqttLwtTopic) {
     Serial.println("MQTT configuration changed, Restarting ESP...");
     EspShouldReboot = true;
@@ -816,6 +833,7 @@ void handleWeatherConfigure() {
   form.replace("%MQTT_USER%", MqttUser);
   form.replace("%MQTT_PSW%", MqttPsw);
   form.replace("%MQTT_TEMP_TOPIC%", MqttTempTopic);
+  form.replace("%MQTT_HUMD_TOPIC%", MqttHumdTopic);
   form.replace("%MQTT_LWT_TOPIC%", MqttLwtTopic);
 
   server.sendContent(form);
@@ -1424,14 +1442,25 @@ void drawClockHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
     }
 
     String externalTemp = "";
+    String externalHumidity = "";
     if (MqttUse) {
       if (extTemp0 != -127.0) {
         externalTemp = roundValue(String(extTemp0)) + getTempSymbol();
       } else {
         externalTemp = "--";
       }
+      if (extHumd0 != -127.0) {
+        externalHumidity = roundValue(String(extHumd0)) + "%";
+      } else {
+        externalHumidity = "--";
+      }
     }
-    display->drawString(0, 47, externalTemp);
+    String strToShow = "";
+    strToShow = externalTemp;
+    if (MqttHumdTopic != "") {
+      strToShow += "/" + externalHumidity;
+    }
+    display->drawString(0, 47, strToShow);
 #else
 /*
     String weatherConditions = weatherClient.getDescription(0);
@@ -1460,14 +1489,25 @@ void drawClockHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
     display->drawStringMaxWidth(0, 47, 120, weatherConditions);
 */    
     String externalTemp = "";
+    String externalHumidity = "";
     if (MqttUse) {
       if (extTemp0 != -127.0) {
         externalTemp = roundValue(String(extTemp0)) + getTempSymbol();
       } else {
         externalTemp = "--";
       }
+      if (extHumd0 != -127.0) {
+        externalHumidity = roundValue(String(extHumd0)) + "%";
+      } else {
+        externalHumidity = "--";
+      }
     }
-    display->drawString(0, 47, externalTemp);
+    String strToShow = "";
+    strToShow = externalTemp;
+    if (MqttHumdTopic != "") {
+      strToShow += "/" + externalHumidity;
+    }
+    display->drawString(0, 47, strToShow);
 #endif
   }
   display->setTextAlignment(TEXT_ALIGN_LEFT);
@@ -1540,6 +1580,7 @@ void writeSettings() {
     f.println("mqttUser=" + String(MqttUser));
     f.println("mqttPsw=" + String(MqttPsw));
     f.println("mqttTempTopic=" + String(MqttTempTopic));
+    f.println("mqttHumdTopic=" + String(MqttHumdTopic));
     f.println("mqttLwtTopic=" + String(MqttLwtTopic));
     f.println("hasPSU=" + String(HAS_PSU));
     f.println("dayTimeBrightness=" + String(DayTimeBrightness));
@@ -1700,6 +1741,11 @@ void readSettings() {
       MqttTempTopic = line.substring(line.lastIndexOf("mqttTempTopic=") + 14);
       MqttTempTopic.trim();
       Serial.println("MqttTempTopic=" + MqttTempTopic);
+    }
+    if (line.indexOf("mqttHumdTopic=") >= 0) {
+      MqttHumdTopic = line.substring(line.lastIndexOf("mqttHumdTopic=") + 14);
+      MqttHumdTopic.trim();
+      Serial.println("MqttHumdTopic=" + MqttHumdTopic);
     }
     if (line.indexOf("mqttLwtTopic=") >= 0) {
       MqttLwtTopic = line.substring(line.lastIndexOf("mqttLwtTopic=") + 13);
