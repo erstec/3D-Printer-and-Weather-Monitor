@@ -382,6 +382,8 @@ void setup() {
   ui.setFrameAnimation(SLIDE_LEFT);
   ui.setTargetFPS(30);
   ui.disableAllIndicators();
+  ui.setTimePerFrame(5000);
+  ui.setTimePerTransition(250);
 #if defined(PRINTER_MON)
   ui.setFrames(frames, (numberOfFrames));
   frames[0] = drawScreen1;
@@ -467,6 +469,9 @@ void setup() {
 #if defined(PRINTER_MON)
   findMDNS();  //go find Printer Server by the hostname
 #endif
+  
+  refreshBrightness(true);
+  
   Serial.println("*** Leaving setup()");
 }
 
