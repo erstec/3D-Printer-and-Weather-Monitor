@@ -535,7 +535,9 @@ void mqttCallback(char *topic, byte *payload, unsigned int length) {
     extHumd0 = atof(message);
   } else if (String(topic) == MqttLwtTopic) {
     Serial.println("LWT changed");
-    if (String(message).equals("Offline")) {
+    String lwt = String(message);
+    lwt.toUpperCase();
+    if (lwt == "OFFLINE") {
       extTemp0 = -127.0;
       extHumd0 = -127.0;
     }
