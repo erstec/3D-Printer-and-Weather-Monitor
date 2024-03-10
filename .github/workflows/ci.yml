@@ -27,5 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade platformio
-    - name: Run PlatformIO
-      run: pio run -e esp8266
+    - name: Run PlatformIO build for WeatherStation
+      run: pio run -e esp8266-weather
+    - name: Run PlatformIO build for PrinterMonitor
+      run: pio run -e esp8266-printer
